@@ -58,21 +58,8 @@ Senha de todos os usuários de teste: `Senha@123`.
 - `E2E=1 npm test`: acrescenta 7 testes de integração, que rodam o app inteiro contra o gateway **real**
   (precisa do backend no ar com `PERMITIR_SIMULACAO=true` e do banco zerado; os testes deixam dados lá).
 
-## O que mudou em relação às telas de design (Sprint 2)
-
-- **Login:** sem campos de e-mail, senha e MFA, que agora ficam na página do Keycloak.
-- **Cadastro:** só nome, e-mail e acesso aos sistemas. CPF, nascimento, telefone, cargo e departamento saíram:
-  não há onde guardar esses dados no backend, e não faz sentido coletá-los sem guardar.
-  A opção "Gestor de TI" saiu: o backend não deixa o analista de RH conceder esse perfil.
-- **Portal:** "Sua sessão" mostra perfil, dispositivo (simulado) e horário. "Expira em" e "último acesso" saíram: não há dado real.
-- **Portal de RH:** "Solicitações recentes" virou a lista de pessoas, que vem da API.
-- **Navegação:** não usa mais `#tela` na URL (o retorno do login a substituiria).
-
-As telas originais seguem no HTML estático do protótipo da Sprint 2.
-
 ## Limitações
 
-- O MFA (TOTP) e a tela de login do Keycloak não têm o visual do projeto (dá para criar um tema do Keycloak depois).
 - A postura do dispositivo é simulada por cabeçalho; em produção viria de um agente confiável.
 - Aprovar um pedido ainda não pede MFA, embora o desenho do projeto preveja.
 - Qualquer gestor de área vê e decide pedidos de qualquer sistema.
