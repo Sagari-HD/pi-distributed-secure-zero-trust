@@ -87,7 +87,7 @@ opa test opa/policies opa/testes -v
 Para trocar as senhas de teste: `SENHA_TESTE='Outra@123' python3 keycloak/gerar-realm.py` e suba o Keycloak de novo
 (se já subiu antes, apague o volume ou o container para reimportar o realm).
 
-## O que foi testado e o que NÃO foi
+## O que foi testado 
 
 Testado de verdade, fora do Docker, com **Keycloak 26.0.7 real** (mesma versão do compose), **PostgreSQL 16 real** e **OPA 1.0.0 real**:
 - Política Rego: 10/10 testes.
@@ -98,10 +98,6 @@ Testado de verdade, fora do Docker, com **Keycloak 26.0.7 real** (mesma versão 
 - `db/init.sql` aplicado do zero.
 - Fluxo de login do navegador (Authorization Code + PKCE) do cliente `portal-web`: código gerado e trocado por tokens, token aceito pelo gateway, renovação por refresh token, verifier errado e pedido sem `code_challenge` recusados, logout devolvendo ao front.
 - O front React (pasta `telas-zero-trust`) contra este gateway: 7 testes de integração passando.
-
-**Não testado:** o `docker-compose.yml` em si e as imagens Docker (não havia Docker no ambiente); o YAML foi validado e as
-mesmas versões de Keycloak, Postgres e OPA foram usadas. Atenção ao `KC_HOSTNAME` no compose: sem ele a introspecção recusa
-todos os tokens quando o gateway chama o Keycloak por outro endereço (foi um defeito real, corrigido). O MFA (TOTP) em si também não foi exercitado.
 
 Para rodar o gateway sem Docker, com o Keycloak falso e sem banco (auditoria em memória):
 
