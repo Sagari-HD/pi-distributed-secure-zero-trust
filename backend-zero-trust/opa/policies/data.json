@@ -1,0 +1,12 @@
+{
+  "sistemas": {
+    "financeiro": {
+      "perfis": ["acesso_financeiro"],
+      "horario": { "inicio": 7, "fim": 20 }
+    },
+    "rh": {
+      "perfis": ["acesso_rh", "analista_rh"],
+      "horario": { "inicio": 7, "fim": 20 }
+    }
+  }
+}

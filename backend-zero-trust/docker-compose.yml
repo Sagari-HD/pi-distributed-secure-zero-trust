@@ -1,0 +1,96 @@
+# ============================================================================
+# docker-compose.yml: sobe TODO o ambiente do protótipo com um comando:
+#     docker compose up --build
+#
+# Mapa das peças (bate com o Diagrama 2, arquitetura de componentes):
+#   keycloak       -> Provedor de Identidade (login, MFA, SSO, tokens)
+#   opa            -> PDP (Policy Decision Point): decide permitir/negar
+#   gateway        -> PEP (Policy Enforcement Point): aplica a decisão
+#   api-financeiro -> sistema protegido (dados fictícios)
+#   api-rh         -> sistema protegido (dados fictícios)
+#   postgres       -> guarda a auditoria e as solicitações de acesso
+# ============================================================================
+services:
+
+  # --- Provedor de identidade ------------------------------------------------
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    # start-dev = modo de desenvolvimento (sem HTTPS). NÃO usar em produção.
+    # --import-realm = cria o realm "aurora" a partir do arquivo JSON abaixo.
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin   # usuário do console de administração
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin   # troque fora do ambiente de teste
+      # IMPORTANTE: fixa a URL pública do Keycloak. Sem isso o campo "iss" do token
+      # depende do endereço usado na chamada, e o gateway (que chama "keycloak:8080"
+      # por dentro do Docker) teria TODOS os tokens recusados na introspecção.
+      KC_HOSTNAME: http://localhost:8080
+      # Mantém as chamadas internas (container -> container) funcionando.
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+    ports:
+      - "8080:8080"                        # console e login: http://localhost:8080
+    volumes:
+      - ./keycloak/realm-aurora.json:/opt/keycloak/data/import/realm-aurora.json:ro
+
+  # --- Banco de dados (auditoria + solicitações) -----------------------------
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: zerotrust
+      POSTGRES_USER: zerotrust
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zerotrust}
+    volumes:
+      # Os arquivos .sql desta pasta rodam sozinhos na primeira subida.
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  # --- PDP: Open Policy Agent -------------------------------------------------
+  opa:
+    image: openpolicyagent/opa:1.0.0
+    # Sobe o OPA como servidor HTTP e carrega tudo que está em /policies
+    # (regras .rego e parâmetros em data.json).
+    command: ["run", "--server", "--addr=0.0.0.0:8181", "/policies"]
+    volumes:
+      - ./opa/policies:/policies:ro
+
+  # --- Sistemas protegidos (não expostos ao host!) ---------------------------
+  # Sem "ports": só o gateway, dentro da rede do Docker, consegue chegar neles.
+  # É isso que impede alguém de "pular" a verificação Zero Trust.
+  api-financeiro:
+    build: ./api-financeiro
+    environment:
+      PORT: 3000
+
+  api-rh:
+    build: ./api-rh
+    environment:
+      PORT: 3000
+
+  # --- PEP: gateway -----------------------------------------------------------
+  gateway:
+    build: ./gateway
+    ports:
+      - "4000:4000"                        # única porta de entrada: http://localhost:4000
+    depends_on:
+      - keycloak
+      - postgres
+      - opa
+      - api-financeiro
+      - api-rh
+    environment:
+      PORT: 4000
+      # O gateway (dentro do Docker) fala com o Keycloak pelo nome "keycloak"...
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      # ...mas os tokens são emitidos para o navegador em "localhost:8080",
+      # então é essa a URL que aparece no campo "iss" do token.
+      KEYCLOAK_PUBLIC_URL: http://localhost:8080
+      KEYCLOAK_REALM: aurora
+      ADMIN_CLIENT_ID: backend-admin
+      ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET:-troque-este-segredo}
+      OPA_URL: http://opa:8181
+      DATABASE_URL: postgres://zerotrust:${POSTGRES_PASSWORD:-zerotrust}@postgres:5432/zerotrust
+      API_FINANCEIRO_URL: http://api-financeiro:3000
+      API_RH_URL: http://api-rh:3000
+      FRONTEND_URL: http://localhost:5173  # origem do front React (libera o CORS)
+      # Liga o cabeçalho X-Simular-Hora, usado SÓ nas demonstrações ("fora do horário").
+      # Com isso ligado, qualquer usuário burla a regra de horário. Desligue fora da demo.
+      PERMITIR_SIMULACAO: "true"

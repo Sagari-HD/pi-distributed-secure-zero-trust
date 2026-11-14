@@ -1,0 +1,193 @@
+{
+  "realm": "aurora",
+  "displayName": "Aurora Holdings",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "passwordPolicy": "length(8) and upperCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and hashAlgorithm(pbkdf2-sha512) and hashIterations(210000)",
+  "bruteForceProtected": true,
+  "failureFactor": 5,
+  "waitIncrementSeconds": 60,
+  "maxFailureWaitSeconds": 900,
+  "roles": {
+    "realm": [
+      {
+        "name": "acesso_financeiro",
+        "description": "Pode usar o Sistema Financeiro"
+      },
+      {
+        "name": "acesso_rh",
+        "description": "Pode usar o Portal de RH"
+      },
+      {
+        "name": "analista_rh",
+        "description": "Cadastra pessoas no RH"
+      },
+      {
+        "name": "gestor_area",
+        "description": "Aprova pedidos de acesso da sua área"
+      },
+      {
+        "name": "gestor_ti",
+        "description": "Consulta a auditoria e revoga sessões"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "portal-web",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:5173/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*"
+      }
+    },
+    {
+      "clientId": "demo-cli",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true
+    },
+    {
+      "clientId": "backend-admin",
+      "publicClient": false,
+      "secret": "troque-este-segredo",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "maria.silva",
+      "email": "maria.silva@aurora.example",
+      "firstName": "Maria",
+      "lastName": "Silva",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "acesso_financeiro",
+        "acesso_rh"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "senha de teste",
+          "createdDate": 1794400476228,
+          "secretData": "{\"value\":\"+7W40ArDLvlhE5Dwkg9uafoWU4BGF7GdTZ983sbPyfnACJZ9v+2Szq67InJ33EPa0bNdjJefzQDNsuTqFriPyA==\",\"salt\":\"yzmVOBKBv3kUVaD+saV+0A==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ]
+    },
+    {
+      "username": "joao.pereira",
+      "email": "joao.pereira@aurora.example",
+      "firstName": "João",
+      "lastName": "Pereira",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "acesso_rh"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "senha de teste",
+          "createdDate": 1794400476342,
+          "secretData": "{\"value\":\"pTXaL5Y1CAw4jlQn6osKptMvuMYTNf7AKpGYOGyvapGyloCXiy0bGha5Y1pJeQpEqRL0NfMY4CWcuVPPvnAdFw==\",\"salt\":\"p9e0FRqsmcc9ON/9XlKHag==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ]
+    },
+    {
+      "username": "paulo.mendes",
+      "email": "paulo.mendes@aurora.example",
+      "firstName": "Paulo",
+      "lastName": "Mendes",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "analista_rh",
+        "acesso_rh"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "senha de teste",
+          "createdDate": 1794400476451,
+          "secretData": "{\"value\":\"5YJLttJKpQUyihHNk50y60w9AabVWl8FNwtnPRK5LP3PrGrsujIBk+m8by1e3joV7ut50AWZbmYh4wD2Kt5RrQ==\",\"salt\":\"fJE5AI7sVInpWkaUr5aIiQ==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ]
+    },
+    {
+      "username": "fernanda.lima",
+      "email": "fernanda.lima@aurora.example",
+      "firstName": "Fernanda",
+      "lastName": "Lima",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "gestor_area",
+        "acesso_financeiro"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "senha de teste",
+          "createdDate": 1794400476559,
+          "secretData": "{\"value\":\"9ry6f7TQh8nF+D2nkUCL5h848GNb2RxHQ4vIRpxXEfwNfqk6QjSCmBsquhEp25uzbhn/3dkc80KMHVCymD1few==\",\"salt\":\"ydT+bjPH6ZrF5IUIATMtJw==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ]
+    },
+    {
+      "username": "carlos.lima",
+      "email": "carlos.lima@aurora.example",
+      "firstName": "Carlos",
+      "lastName": "Lima",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "gestor_ti",
+        "acesso_rh",
+        "acesso_financeiro"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "userLabel": "senha de teste",
+          "createdDate": 1794400476671,
+          "secretData": "{\"value\":\"HZzaT1Ik2pdZauSq3E0abSuxqkU3v0W6L3lGxxtHNQ9YJuduoz6WvgdKXBD2vclxfDY+j33E1i0LSfcXmqifYg==\",\"salt\":\"AX99s/XGN5ypeF19DfXB1g==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ]
+    },
+    {
+      "username": "service-account-backend-admin",
+      "enabled": true,
+      "serviceAccountClientId": "backend-admin",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users",
+          "view-realm"
+        ]
+      }
+    }
+  ]
+}
